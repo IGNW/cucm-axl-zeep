@@ -1,4 +1,12 @@
-# Several Small Projects for Cisco to show off how to use Python and AXL 
+# Details on Using Python/Zeep with CUCM AXL API
+This repo contains details on how to use Python/Zeep along
+with the CUCM AXL SOAP API to make Administering the CUCM easier.
+
+Ths repo contains the following information
+- Information on installing Python and Zeep
+- Information on Installing, Configuring, and working with SOAP UI
+- Details on how each of the major category of API Calls works 
+- Some sample programs that 
 
 
 # Getting Started
@@ -55,4 +63,6 @@
 ### Command Line tool to add Jabber Devices to existing users
 
 
+## Bulk Update Tool
+### Update the Line Text Label on all lines to match a new standard
 
