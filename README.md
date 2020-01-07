@@ -38,9 +38,10 @@ Scenario: Your company wants to update the line text label on all the phones to 
 
 
 
-Optional - if I have time or Cisco wants this
+
 
 # Understanding how the tools work
+Optional - if I have time or Cisco wants this
 
 ## Python and Zeep and the CUCM AXL API
 
