@@ -30,6 +30,9 @@ Scenario: The standard reports from the CUCM exporter don't have all the data yo
 
 
 ## Standardizing Existing Deployments
+### Tool to add site configurations from YAML Templates
+Scenario: You're a UC engineer adding a new site to a UC Server.  Using Python and Zeep, modify a simple yaml template and use that to load the site configuration into CUCM.
+
 ### Tool to add Jabber Devices to existing users
 Scenario: You are rolling out Jabber to all your existing users.  They are currently set up with only a phone.  Using python you can enable Jabber for the user, build all missing devices (CSF, TCT, TAB) and configure all the settings for each user.
 
