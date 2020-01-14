@@ -26,19 +26,25 @@ Command Line Tool for easily querying the get and list methods of CUCM to better
 ## Data Exporter Use Cases
 ### Create Custom CSV Reports by pulling data from the CUCM AXL API
 Scenario: The standard reports from the CUCM exporter don't have all the data you need in the right order.  You end up having to export multiple tables and merge them together.  Use a python script to automate this process.
-
+Tool #2
 
 
 ## Standardizing Existing Deployments
 ### Tool to add site configurations from YAML Templates
 Scenario: You're a UC engineer adding a new site to a UC Server.  Using Python and Zeep, modify a simple yaml template and use that to load the site configuration into CUCM.
+Tool #1
+
+### Tool to pull data ouf of the CUCM to build a YAML Templates
+Scenario: You have existing site in CUCM and want to create a template based on that data for an existing site
+Tool # 1a
 
 ### Tool to add Jabber Devices to existing users
 Scenario: You are rolling out Jabber to all your existing users.  They are currently set up with only a phone.  Using python you can enable Jabber for the user, build all missing devices (CSF, TCT, TAB) and configure all the settings for each user.
+#3
 
 ### Update the Line Text Label on all lines to match a new standard
 Scenario: Your company wants to update the line text label on all the phones to be their extensin plus last name.  Use python to query each phone for their assigned userid, pull the primary extension from that user and use that to create and update the line text label for each phone in the CUCM.
-
+#4
 
 
 
