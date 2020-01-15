@@ -1,8 +1,9 @@
 """CUCM Site Data Extraction Tool
 
-This is a where you put in a Device Pool and it crawls the CUCM and Pulls out all the related fields.
+This is a where you enter in a Device Pool and it pulls out the Device Pool as well as data for dependant objects.
 
-The output will be into a YAML file.
+The output will be a JSON file in the output folder.
+
 
 The intent is you could use that to create a file that could modified and be fed back 
 into the cucm_site_creation_tool in this repo to make deploying sites to match existing sites easier.
@@ -205,14 +206,13 @@ output_data['dateTimeGroup'] = date_time_group_output_data
 
 ################################################################################
 #                   CallManger Group
-###############################################################################
+################################################################################
 call_manager_group_name = output_data['devicePool']['callManagerGroupName']
 
 call_manager_group = service.getCallManagerGroup(name=call_manager_group_name)
 call_manager_group_data = call_manager_group['return']['callManagerGroup']
-print(call_manager_group_data)
-
 cm_member_data = []
+
 # Strip out unneeded values from return data
 for member in call_manager_group_data['members']['member']:
     data = {
@@ -221,7 +221,68 @@ for member in call_manager_group_data['members']['member']:
     }
     cm_member_data.append(data)
 
-#print(output_data)
+call_manager_group_output_data = {
+    'name': call_manager_group_data['name'],
+    'tftpDefault': call_manager_group_data['tftpDefault'],
+    'members': {'member': cm_member_data} 
+}
+
+output_data['callManagerGroup'] = call_manager_group_output_data
+
+################################################################################
+#                   Media Resource Group List
+################################################################################
+mrgl_name = output_data['devicePool']['mediaResourceListName']
+
+# A MRGL might not be set, verifies one is configured for the Device Pool
+if mrgl_name:
+    mrgl = service.getMediaResourceList(name=mrgl_name)
+    mrgl_data = mrgl['return']['mediaResourceList']
+    mrgl_member_data = []
+
+    # Strip out unneeded values from return data assuming there is data in the object
+    if mrgl_data['members']:
+        for member in mrgl_data['members']['member']:
+            data = {
+                'mediaResourceGroupName': member['mediaResourceGroupName']['_value_1'],
+                'order': member['order']
+            }
+            mrgl_member_data.append(data)
+
+    mrgl_output_data = {
+        'name': mrgl_data['name'],
+        'clause': mrgl_data['clause'],
+        'members': {'member': mrgl_member_data} 
+    }
+
+    output_data['mediaResourceList'] = mrgl_output_data 
+
+else:
+    output_data['mediaResourceList'] = {}
+
+################################################################################
+#                   Region Name
+################################################################################
+
+################################################################################
+#                   SRST Name
+################################################################################
+
+################################################################################
+#                   Location Name
+################################################################################
+
+
+
+
+################################################################################
+#                   
+################################################################################
+################################################################################
+#                   
+################################################################################
+
+print(output_data)
 #output_data['dateTimeGroup']['name'] = 'JoeNTP'
 #to_add = service.addDateTimeGroup(output_data['dateTimeGroup'])
 #print(to_add)
