@@ -1,14 +1,20 @@
-"""Template script, using the zeep library
+"""CUCM Site Data Extraction Tool
 
-This is a template file to make getting started easier.
-Copy this file and the creds.py file into your project and start making calls to CUCM.
+This is a where you put in a Device Pool and it crawls the CUCM and Pulls out all the related fields.
 
-This was copied from the axlZeep.py file from the DevNet AXL examples
+The output will be into a YAML file.
+
+The intent is you could use that to create a file that could modified and be fed back 
+into the cucm_site_creation_tool in this repo to make deploying sites to match existing sites easier.
+
+This core of this was copied from the axlZeep.py file from the DevNet AXL examples
 https://github.com/CiscoDevNet/axl-python-zeep-samples
 
+A minimum of Python 3.6 is required for this as it depends on the Dictionaries preserving order and
+that feature was introduced in Python 3.6
 
-Install Python 3.7
-On Windows, choose the option to add to PATH environment variable
+Install Python 3.6 or later.
+On Windows during the install, choose the option in the installer to add to PATH environment variable
 
 If this is a fresh installation, update pip (you may need to use `pip3` on Linux or Mac)
 
@@ -115,8 +121,35 @@ service = client.create_service( '{http://www.cisco.com/AXLAPIService/}AXLAPIBin
                                 'https://{cucm}:8443/axl/'.format( cucm = creds.CUCM_ADDRESS ))
 
 
-
-
-
 # Add your AXL calls below here.  Examples will be provided below, but everything
 # below this line can be deleted or commented out and replaced with your code.
+device_pool_to_find = "Default"
+
+# List all of the devices in the system
+# Each list method has various tags you can search on
+# Most every method has the name parameter though
+search_all_names = {
+    'name': '%'         # The percent sign is a mulit-character wildcard in the CUCM searchCriteria parameters 
+}                       # The question mark (not shown) is a single character wild card
+
+# The ZEEP library will return all parameters
+# But you have to define which ones you want data for otherwise all you'll get are Null values
+device_pool_attributes_to_return = {
+    'name': '',
+}
+
+
+device_pools = service.listDevicePool(searchCriteria={'name': '%'}, returnedTags=device_pool_attributes_to_return)
+
+# Determine if the desired Device Pool is in the list of returned data
+found_device_pool = False
+
+for dp in device_pools['return']['devicePool']:
+    if device_pool_to_find == dp['name']:
+        found_device_pool = True
+
+if not found_device_pool:
+    print("The device pool you entered could not be found.\nPlease try again.")
+    exit(1)     # Non-zero exit codes indicate a problem
+
+
