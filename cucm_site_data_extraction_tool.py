@@ -64,7 +64,6 @@ WSDL_FILE = 'schema/AXLAPI.wsdl'
 
 # Configure CUCM location and AXL credentials in creds.py
 import creds
-
 # Change to true to enable output of request/response headers and XML
 DEBUG = False
 
@@ -121,8 +120,10 @@ service = client.create_service( '{http://www.cisco.com/AXLAPIService/}AXLAPIBin
                                 'https://{cucm}:8443/axl/'.format( cucm = creds.CUCM_ADDRESS ))
 
 
-# Add your AXL calls below here.  Examples will be provided below, but everything
-# below this line can be deleted or commented out and replaced with your code.
+# Create a dictionary for the output
+output_data = {}
+
+# Enter the device pool you're looking for
 device_pool_to_find = "Default"
 
 # List all of the devices in the system
@@ -133,7 +134,8 @@ search_all_names = {
 }                       # The question mark (not shown) is a single character wild card
 
 # The ZEEP library will return all parameters
-# But you have to define which ones you want data for otherwise all you'll get are Null values
+# But you have to define which ones you want data for otherwise all you'll get are None values
+# in the return data when using the list methods.
 device_pool_attributes_to_return = {
     'name': '',
 }
@@ -152,4 +154,57 @@ if not found_device_pool:
     print("The device pool you entered could not be found.\nPlease try again.")
     exit(1)     # Non-zero exit codes indicate a problem
 
+################################################################################
+#                   Device Pool
+################################################################################
+# Get all the device pool info
+device_pool = service.getDevicePool(name=device_pool_to_find)
+device_pool_data = device_pool['return']['devicePool']
 
+# Extract the data from the returned output
+device_pool_output_data = {
+    'name': device_pool_data['name'],
+    'dateTimeSettingName': device_pool_data['dateTimeSettingName']['_value_1'],
+    'callManagerGroupName': device_pool_data['callManagerGroupName']['_value_1'],
+    'mediaResourceListName': device_pool_data['mediaResourceListName']['_value_1'],
+    'regionName': device_pool_data['regionName']['_value_1'],
+    'srstName': device_pool_data['srstName']['_value_1'],
+    'locationName': device_pool_data['locationName']['_value_1'],
+}
+
+output_data['devicePool'] = device_pool_output_data
+
+################################################################################
+#                   Date Time Group
+################################################################################
+# Get the name of the Date Time Group Used
+date_time_group_name = output_data['devicePool']['dateTimeSettingName']
+
+date_time_group = service.getDateTimeGroup(name=date_time_group_name)
+date_time_group_data = date_time_group['return']['dateTimeGroup']
+
+ntp_ref_data = []
+# Strip out unneeded values from return data
+for ntp_ref in date_time_group_data['phoneNtpReferences']['selectedPhoneNtpReference']:
+    data = {
+        'phoneNtpName': ntp_ref['phoneNtpName']['_value_1'],
+        'selectionOrder': ntp_ref['selectionOrder']
+    }
+    ntp_ref_data.append(data)
+
+date_time_group_output_data = {
+    'name': date_time_group_data['name'],
+    'timeZone': date_time_group_data['timeZone'],
+    'separator': date_time_group_data['separator'],
+    'dateformat': date_time_group_data['dateformat'],
+    'timeFormat': date_time_group_data['timeFormat'],
+    'phoneNtpReferences': {'selectedPhoneNtpReference': ntp_ref_data}
+}
+
+output_data['dateTimeGroup'] = date_time_group_output_data
+
+print(output_data)
+
+#output_data['dateTimeGroup']['name'] = 'JoeNTP'
+#to_add = service.addDateTimeGroup(output_data['dateTimeGroup'])
+#print(to_add)
