@@ -203,8 +203,25 @@ date_time_group_output_data = {
 
 output_data['dateTimeGroup'] = date_time_group_output_data
 
-print(output_data)
+################################################################################
+#                   CallManger Group
+###############################################################################
+call_manager_group_name = output_data['devicePool']['callManagerGroupName']
 
+call_manager_group = service.getCallManagerGroup(name=call_manager_group_name)
+call_manager_group_data = call_manager_group['return']['callManagerGroup']
+print(call_manager_group_data)
+
+cm_member_data = []
+# Strip out unneeded values from return data
+for member in call_manager_group_data['members']['member']:
+    data = {
+        'callManagerName': member['callManagerName']['_value_1'],
+        'priority': member['priority']
+    }
+    cm_member_data.append(data)
+
+#print(output_data)
 #output_data['dateTimeGroup']['name'] = 'JoeNTP'
 #to_add = service.addDateTimeGroup(output_data['dateTimeGroup'])
 #print(to_add)
