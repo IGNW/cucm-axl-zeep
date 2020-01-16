@@ -261,18 +261,101 @@ else:
     output_data['mediaResourceList'] = {}
 
 ################################################################################
-#                   Region Name
+#                   Region
 ################################################################################
+region_name = output_data['devicePool']['regionName']
+
+region = service.getRegion(name=region_name)
+
+region_data = region['return']['region']
+related_region_data = []
+
+# Strip out unneeded values from return data assuming there is data in the object
+for region in region_data['relatedRegions']['relatedRegion']:
+    data = {
+        'regionName': region['regionName']['_value_1'],
+        'bandwidth': region['bandwidth'],
+        'videoBandwidth': region['videoBandwidth'],
+        'lossyNetwork': region['lossyNetwork'],
+        'codecPreference': region['codecPreference']['_value_1'],
+        'immersiveVideoBandwidth': region['immersiveVideoBandwidth']
+    }
+
+    related_region_data.append(data)
+
+region_output_data = {
+    'name': region_data['name'],
+    'relatedRegions': {'relatedRegion': related_region_data},
+    'defaultCodec': region_data['defaultCodec']
+}
+
+output_data['region'] = region_output_data 
 
 ################################################################################
 #                   SRST Name
 ################################################################################
+srst_name = output_data['devicePool']['srstName']
+
+region = service.getSrst(name=srst_name)
+
+srst_data = region['return']['srst']
+
+srst_output_data = {
+    'name': srst_data['name'],
+    'port': srst_data['port'],
+    'ipAddress': srst_data['ipAddress'],
+    'ipv6Address': srst_data['ipv6Address'],
+    'SipNetwork': srst_data['SipNetwork'],
+    'SipPort': srst_data['SipPort'],
+    'srstCertificatePort': srst_data['srstCertificatePort'],
+    'isSecure': srst_data['isSecure']
+}
+
+output_data['srst'] = srst_output_data
 
 ################################################################################
-#                   Location Name
+#                   Location
 ################################################################################
+location_name = output_data['devicePool']['locationName']
 
+if location_name:
+    location = service.getLocation(name=location_name)
+    location_data = location['return']['location']
+    related_location_data = []
+    between_location_data = []
 
+    # Strip out unneeded values from return data assuming there is data in the object
+    for rel_loc in location_data['relatedLocations']['relatedLocation']:
+        data = {
+            'locationName': rel_loc['locationName']['_value_1'],
+            'rsvpSetting': rel_loc['rsvpSetting']
+        }
+        related_location_data.append(data)
+
+    for bet_loc in location_data['betweenLocations']['betweenLocation']:
+        data = {
+            'locationName': bet_loc['locationName']['_value_1'],
+            'weight': bet_loc['weight'],
+            'audioBandwidth': bet_loc['audioBandwidth'],
+            'videoBandwidth': bet_loc['videoBandwidth'],
+            'immersiveBandwidth': bet_loc['immersiveBandwidth']
+        }
+        between_location_data.append(data)
+
+    location_output_data = {
+        'name': location_data['name'],
+        'id': location_data['id'],
+        'relatedLocations': {'relatedLocation': related_location_data},
+        'withinAudioBandwidth': location_data['withinAudioBandwidth'],
+        'withinVideoBandwidth': location_data['withinVideoBandwidth'],
+        'withinImmersiveKbits': location_data['withinImmersiveKbits'],
+        'betweenLocations': {'betweenLocation': between_location_data}
+    }
+
+    output_data['location'] = location_output_data
+
+else:
+    output_data['location'] = {} 
 
 
 ################################################################################
