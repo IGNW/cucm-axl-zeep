@@ -16,7 +16,7 @@ If this is a fresh installation, update pip (you may need to use `pip3` on Linux
 
 Script Dependencies:
     lxml        # Installed when you install zeep
-    requests    # Installed when you install zeep 
+    requests    # Installed when you install zeep
     zeep
 
 Dependency Installation:
@@ -44,7 +44,6 @@ SOFTWARE.
 """
 
 
-import creds
 from lxml import etree
 from requests import Session
 from requests.auth import HTTPBasicAuth
@@ -58,13 +57,14 @@ from zeep.exceptions import Fault
 WSDL_FILE = 'schema/AXLAPI.wsdl'
 
 # Configure CUCM location and AXL credentials in creds.py
+import creds
 
 # Change to true to enable output of request/response headers and XML
 DEBUG = False
 
 # If you have a pem file certificate for CUCM, uncomment and define it here
 
-#CERT = 'some.pem'
+# CERT = 'some.pem'
 
 # These values should work with a DevNet sandbox
 # You may need to change them if you are working with your own CUCM server
@@ -93,7 +93,7 @@ session = Session()
 # We avoid certificate verification by default, but you can uncomment and set
 # your certificate here, and comment out the False setting
 
-#session.verify = CERT
+# session.verify = CERT
 session.verify = False
 session.auth = HTTPBasicAuth(creds.USERNAME, creds.PASSWORD)
 
