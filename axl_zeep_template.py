@@ -44,6 +44,7 @@ SOFTWARE.
 """
 
 
+import creds
 from lxml import etree
 from requests import Session
 from requests.auth import HTTPBasicAuth
@@ -57,7 +58,6 @@ from zeep.exceptions import Fault
 WSDL_FILE = 'schema/AXLAPI.wsdl'
 
 # Configure CUCM location and AXL credentials in creds.py
-import creds
 
 # Change to true to enable output of request/response headers and XML
 DEBUG = False
@@ -70,23 +70,23 @@ DEBUG = False
 # You may need to change them if you are working with your own CUCM server
 
 
-
 # This class lets you view the incoming and outgoing http headers and/or XML
-class MyLoggingPlugin( Plugin ):
+class MyLoggingPlugin(Plugin):
 
-    def egress( self, envelope, http_headers, operation, binding_options ):
+    def egress(self, envelope, http_headers, operation, binding_options):
 
         # Format the request body as pretty printed XML
-        xml = etree.tostring( envelope, pretty_print = True, encoding = 'unicode')
+        xml = etree.tostring(envelope, pretty_print=True, encoding='unicode')
 
-        print( f'\nRequest\n-------\nHeaders:\n{http_headers}\n\nBody:\n{xml}' )
+        print(f'\nRequest\n-------\nHeaders:\n{http_headers}\n\nBody:\n{xml}')
 
-    def ingress( self, envelope, http_headers, operation ):
+    def ingress(self, envelope, http_headers, operation):
 
         # Format the response body as pretty printed XML
-        xml = etree.tostring( envelope, pretty_print = True, encoding = 'unicode')
+        xml = etree.tostring(envelope, pretty_print=True, encoding='unicode')
 
-        print( f'\nResponse\n-------\nHeaders:\n{http_headers}\n\nBody:\n{xml}' )
+        print(f'\nResponse\n-------\nHeaders:\n{http_headers}\n\nBody:\n{xml}')
+
 
 session = Session()
 
@@ -95,27 +95,24 @@ session = Session()
 
 #session.verify = CERT
 session.verify = False
-session.auth = HTTPBasicAuth( creds.USERNAME, creds.PASSWORD )
+session.auth = HTTPBasicAuth(creds.USERNAME, creds.PASSWORD)
 
 # Create a Zeep transport and set a reasonable timeout value
-transport = Transport( session = session, timeout = 10 )
+transport = Transport(session=session, timeout=10)
 
 # strict=False is not always necessary, but it allows zeep to parse imperfect XML
-settings = Settings( strict=False, xml_huge_tree=True )
+settings = Settings(strict=False, xml_huge_tree=True)
 
 # If debug output is requested, add the MyLoggingPlugin callback
-plugin = [ MyLoggingPlugin() ] if DEBUG else [ ]
+plugin = [MyLoggingPlugin()] if DEBUG else []
 
 # Create the Zeep client with the specified settings
-client = Client( WSDL_FILE, settings = settings, transport = transport,
-        plugins = plugin )
+client = Client(WSDL_FILE, settings=settings, transport=transport,
+                plugins=plugin)
 
 # service = client.create_service("{http://www.cisco.com/AXLAPIService/}AXLAPIBinding", CUCM_URL)
-service = client.create_service( '{http://www.cisco.com/AXLAPIService/}AXLAPIBinding',
-                                'https://{cucm}:8443/axl/'.format( cucm = creds.CUCM_ADDRESS ))
-
-
-
+service = client.create_service('{http://www.cisco.com/AXLAPIService/}AXLAPIBinding',
+                                'https://{cucm}:8443/axl/'.format(cucm=creds.CUCM_ADDRESS))
 
 
 # Add your AXL calls below here.  Examples will be provided below, but everything

@@ -5,7 +5,7 @@ This is a where you enter in a Device Pool and it pulls out the Device Pool as w
 The output will be a JSON file in the output folder.
 
 
-The intent is you could use that to create a file that could modified and be fed back 
+The intent is you could use that to create a file that could modified and be fed back
 into the cucm_site_creation_tool in this repo to make deploying sites to match existing sites easier.
 
 This core of this was copied from the axlZeep.py file from the DevNet AXL examples
@@ -65,6 +65,7 @@ WSDL_FILE = 'schema/AXLAPI.wsdl'
 
 # Configure CUCM location and AXL credentials in creds.py
 import creds
+
 # Change to true to enable output of request/response headers and XML
 DEBUG = False
 
@@ -76,23 +77,23 @@ DEBUG = False
 # You may need to change them if you are working with your own CUCM server
 
 
-
 # This class lets you view the incoming and outgoing http headers and/or XML
-class MyLoggingPlugin( Plugin ):
+class MyLoggingPlugin(Plugin):
 
-    def egress( self, envelope, http_headers, operation, binding_options ):
+    def egress(self, envelope, http_headers, operation, binding_options):
 
         # Format the request body as pretty printed XML
-        xml = etree.tostring( envelope, pretty_print = True, encoding = 'unicode')
+        xml = etree.tostring(envelope, pretty_print=True, encoding='unicode')
 
-        print( f'\nRequest\n-------\nHeaders:\n{http_headers}\n\nBody:\n{xml}' )
+        print(f'\nRequest\n-------\nHeaders:\n{http_headers}\n\nBody:\n{xml}')
 
-    def ingress( self, envelope, http_headers, operation ):
+    def ingress(self, envelope, http_headers, operation):
 
         # Format the response body as pretty printed XML
-        xml = etree.tostring( envelope, pretty_print = True, encoding = 'unicode')
+        xml = etree.tostring(envelope, pretty_print=True, encoding='unicode')
 
-        print( f'\nResponse\n-------\nHeaders:\n{http_headers}\n\nBody:\n{xml}' )
+        print(f'\nResponse\n-------\nHeaders:\n{http_headers}\n\nBody:\n{xml}')
+
 
 session = Session()
 
@@ -101,24 +102,24 @@ session = Session()
 
 #session.verify = CERT
 session.verify = False
-session.auth = HTTPBasicAuth( creds.USERNAME, creds.PASSWORD )
+session.auth = HTTPBasicAuth(creds.USERNAME, creds.PASSWORD)
 
 # Create a Zeep transport and set a reasonable timeout value
-transport = Transport( session = session, timeout = 10 )
+transport = Transport(session=session, timeout=10)
 
 # strict=False is not always necessary, but it allows zeep to parse imperfect XML
-settings = Settings( strict=False, xml_huge_tree=True )
+settings = Settings(strict=False, xml_huge_tree=True)
 
 # If debug output is requested, add the MyLoggingPlugin callback
-plugin = [ MyLoggingPlugin() ] if DEBUG else [ ]
+plugin = [MyLoggingPlugin()] if DEBUG else []
 
 # Create the Zeep client with the specified settings
-client = Client( WSDL_FILE, settings = settings, transport = transport,
-        plugins = plugin )
+client = Client(WSDL_FILE, settings=settings, transport=transport,
+                plugins=plugin)
 
 # service = client.create_service("{http://www.cisco.com/AXLAPIService/}AXLAPIBinding", CUCM_URL)
-service = client.create_service( '{http://www.cisco.com/AXLAPIService/}AXLAPIBinding',
-                                'https://{cucm}:8443/axl/'.format( cucm = creds.CUCM_ADDRESS ))
+service = client.create_service('{http://www.cisco.com/AXLAPIService/}AXLAPIBinding',
+                                'https://{cucm}:8443/axl/'.format(cucm=creds.CUCM_ADDRESS))
 
 
 # Create a dictionary for the output
@@ -131,7 +132,8 @@ device_pool_to_find = "Default"
 # Each list method has various tags you can search on
 # Most every method has the name parameter though
 search_all_names = {
-    'name': '%'         # The percent sign is a mulit-character wildcard in the CUCM searchCriteria parameters 
+    # The percent sign is a mulit-character wildcard in the CUCM searchCriteria parameters
+    'name': '%'
 }                       # The question mark (not shown) is a single character wild card
 
 # The ZEEP library will return all parameters
@@ -142,7 +144,8 @@ device_pool_attributes_to_return = {
 }
 
 
-device_pools = service.listDevicePool(searchCriteria={'name': '%'}, returnedTags=device_pool_attributes_to_return)
+device_pools = service.listDevicePool(
+    searchCriteria={'name': '%'}, returnedTags=device_pool_attributes_to_return)
 
 # Determine if the desired Device Pool is in the list of returned data
 found_device_pool = False
@@ -224,7 +227,7 @@ for member in call_manager_group_data['members']['member']:
 call_manager_group_output_data = {
     'name': call_manager_group_data['name'],
     'tftpDefault': call_manager_group_data['tftpDefault'],
-    'members': {'member': cm_member_data} 
+    'members': {'member': cm_member_data}
 }
 
 output_data['callManagerGroup'] = call_manager_group_output_data
@@ -252,10 +255,10 @@ if mrgl_name:
     mrgl_output_data = {
         'name': mrgl_data['name'],
         'clause': mrgl_data['clause'],
-        'members': {'member': mrgl_member_data} 
+        'members': {'member': mrgl_member_data}
     }
 
-    output_data['mediaResourceList'] = mrgl_output_data 
+    output_data['mediaResourceList'] = mrgl_output_data
 
 else:
     output_data['mediaResourceList'] = {}
@@ -289,7 +292,7 @@ region_output_data = {
     'defaultCodec': region_data['defaultCodec']
 }
 
-output_data['region'] = region_output_data 
+output_data['region'] = region_output_data
 
 ################################################################################
 #                   SRST Name
@@ -355,17 +358,17 @@ if location_name:
     output_data['location'] = location_output_data
 
 else:
-    output_data['location'] = {} 
+    output_data['location'] = {}
 
 
 ################################################################################
-#                   
+#
 ################################################################################
 ################################################################################
-#                   
+#
 ################################################################################
 
 print(output_data)
-#output_data['dateTimeGroup']['name'] = 'JoeNTP'
-#to_add = service.addDateTimeGroup(output_data['dateTimeGroup'])
-#print(to_add)
+# output_data['dateTimeGroup']['name'] = 'JoeNTP'
+# to_add = service.addDateTimeGroup(output_data['dateTimeGroup'])
+# print(to_add)
