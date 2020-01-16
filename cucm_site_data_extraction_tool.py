@@ -8,11 +8,10 @@ The output will be a JSON file in the output folder.
 The intent is you could use that to create a file that could modified and be fed back
 into the cucm_site_creation_tool in this repo to make deploying sites to match existing sites easier.
 
-This core of this was copied from the axlZeep.py file from the DevNet AXL examples
+This core connectivity code was copied from the axlZeep.py file from the DevNet AXL examples
 https://github.com/CiscoDevNet/axl-python-zeep-samples
 
-A minimum of Python 3.6 is required for this as it depends on the Dictionaries preserving order and
-that feature was introduced in Python 3.6
+A minimum of Python 3.6 is required for this tool.
 
 Install Python 3.6 or later.
 On Windows during the install, choose the option in the installer to add to PATH environment variable
@@ -49,7 +48,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-
+import json
 
 from lxml import etree
 from requests import Session
@@ -59,6 +58,9 @@ from zeep import Client, Settings, Plugin
 from zeep.transports import Transport
 from zeep.cache import SqliteCache
 from zeep.exceptions import Fault
+
+from pathlib import Path
+from datetime import datetime
 
 # The WSDL is a local file
 WSDL_FILE = 'schema/AXLAPI.wsdl'
@@ -126,7 +128,7 @@ service = client.create_service('{http://www.cisco.com/AXLAPIService/}AXLAPIBind
 output_data = {}
 
 # Enter the device pool you're looking for
-device_pool_to_find = "Default"
+device_pool_to_find = input("Enter the exact name of the Device Pool in the CUCM: ")
 
 # List all of the devices in the system
 # Each list method has various tags you can search on
@@ -186,7 +188,6 @@ date_time_group_name = output_data['devicePool']['dateTimeSettingName']
 
 date_time_group = service.getDateTimeGroup(name=date_time_group_name)
 date_time_group_data = date_time_group['return']['dateTimeGroup']
-
 ntp_ref_data = []
 # Strip out unneeded values from return data
 for ntp_ref in date_time_group_data['phoneNtpReferences']['selectedPhoneNtpReference']:
@@ -274,17 +275,18 @@ region_data = region['return']['region']
 related_region_data = []
 
 # Strip out unneeded values from return data assuming there is data in the object
-for region in region_data['relatedRegions']['relatedRegion']:
-    data = {
-        'regionName': region['regionName']['_value_1'],
-        'bandwidth': region['bandwidth'],
-        'videoBandwidth': region['videoBandwidth'],
-        'lossyNetwork': region['lossyNetwork'],
-        'codecPreference': region['codecPreference']['_value_1'],
-        'immersiveVideoBandwidth': region['immersiveVideoBandwidth']
-    }
+if region_data['relatedRegions']:
+    for region in region_data['relatedRegions']['relatedRegion']:
+        data = {
+            'regionName': region['regionName']['_value_1'],
+            'bandwidth': region['bandwidth'],
+            'videoBandwidth': region['videoBandwidth'],
+            'lossyNetwork': region['lossyNetwork'],
+            'codecPreference': region['codecPreference']['_value_1'],
+            'immersiveVideoBandwidth': region['immersiveVideoBandwidth']
+        }
 
-    related_region_data.append(data)
+        related_region_data.append(data)
 
 region_output_data = {
     'name': region_data['name'],
@@ -362,13 +364,12 @@ else:
 
 
 ################################################################################
-#
+#                   Write Gathered Data to a JSON File
 ################################################################################
-################################################################################
-#
-################################################################################
+now = datetime.now().strftime('%Y%m%d_%H%M%S')
+output_file_path = Path(f"site_configurations/site_export_{device_pool_to_find}_{creds.CUCM_ADDRESS}_{now}.json")
 
-print(output_data)
-# output_data['dateTimeGroup']['name'] = 'JoeNTP'
-# to_add = service.addDateTimeGroup(output_data['dateTimeGroup'])
-# print(to_add)
+with open(output_file_path, 'w') as out:
+    output_json = json.dumps(output_data, indent=2)
+    out.write(output_json)
+
