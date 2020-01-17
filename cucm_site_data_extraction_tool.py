@@ -63,7 +63,8 @@ from pathlib import Path
 from datetime import datetime
 
 # The WSDL is a local file
-WSDL_FILE = 'schema/AXLAPI.wsdl'
+# Using Pathlib.Path to make Windows/Unix path difference issues go away
+WSDL_FILE = str(Path('schema') / 'AXLAPI.wsdl')
 
 # Configure CUCM location and AXL credentials in creds.py
 import creds
@@ -348,15 +349,16 @@ if location_name:
         }
         related_location_data.append(data)
 
-    for bet_loc in location_data['betweenLocations']['betweenLocation']:
-        data = {
-            'locationName': bet_loc['locationName']['_value_1'],
-            'weight': bet_loc['weight'],
-            'audioBandwidth': bet_loc['audioBandwidth'],
-            'videoBandwidth': bet_loc['videoBandwidth'],
-            'immersiveBandwidth': bet_loc['immersiveBandwidth']
-        }
-        between_location_data.append(data)
+    if location_data['betweenLocations']:
+        for bet_loc in location_data['betweenLocations']['betweenLocation']:
+            data = {
+                'locationName': bet_loc['locationName']['_value_1'],
+                'weight': bet_loc['weight'],
+                'audioBandwidth': bet_loc['audioBandwidth'],
+                'videoBandwidth': bet_loc['videoBandwidth'],
+                'immersiveBandwidth': bet_loc['immersiveBandwidth']
+            }
+            between_location_data.append(data)
 
     if related_location_data:
         related_location = {'relatedLocation': related_location_data}
@@ -387,9 +389,10 @@ else:
 #                   Write Gathered Data to a JSON File
 ################################################################################
 now = datetime.now().strftime('%Y%m%d_%H%M%S')
-output_file_path = Path(f"site_configurations/site_export_{device_pool_to_find}_{creds.CUCM_ADDRESS}_{now}.json")
+output_file = Path("site_configurations") / f"site_export_{device_pool_to_find}_{creds.CUCM_ADDRESS}_{now}.json"
 
-with open(output_file_path, 'w') as out:
+with open(output_file, 'w') as out:
     output_json = json.dumps(output_data, indent=2)
     out.write(output_json)
+    print(f"Site Data written to the file `{output_file}` successfully.")
 

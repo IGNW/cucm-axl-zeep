@@ -54,7 +54,8 @@ from zeep.cache import SqliteCache
 from zeep.exceptions import Fault
 
 # The WSDL is a local file
-WSDL_FILE = 'schema/AXLAPI.wsdl'
+# Using Pathlib.Path to make Windows/Unix path difference issues go away
+WSDL_FILE = str(Path('schema') / 'AXLAPI.wsdl')
 
 # Configure CUCM location and AXL credentials in creds.py
 import creds
