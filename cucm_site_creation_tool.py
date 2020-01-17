@@ -154,85 +154,169 @@ with open(data_file) as df:
 ################################################################################
 #                   Add Locations
 ################################################################################
-if site_data.get('location'):
+cucm_resource_friendly_name = "Location"
+cucm_resource_name = "location" 
+
+if site_data.get(cucm_resource_name):
     need_to_add_location = True 
 
     cucm_locations = service.listLocation(searchCriteria=search_all_names, returnedTags=list_attributes_to_return)
 
     # Checking to see if the object in the file already exists in the CUCM
-    for location in cucm_locations['return']['location']:
-        if site_data['location']['name'] == location['name']:
+    for location in cucm_locations['return'][cucm_resource_name]:
+        if site_data[cucm_resource_name]['name'] == location['name']:
             need_to_add_location = False 
 
     if need_to_add_location:
         # Related Locations can cause the add to fail if it refers to itself
         # Removing the data and adding as an update after the new location is created.
-        related_locations = site_data['location']['relatedLocations']
-        print(site_data['location'].pop('relatedLocations'))
+        related_locations = site_data[cucm_resource_name]['relatedLocations']
+        site_data[cucm_resource_name].pop('relatedLocations')
 
-        response = service.addLocation(site_data['location'])
-        print(f'Added the location called `{site_data["location"]["name"]}` with a UUID of {response["return"]} to CUCM')
+        response = service.addLocation(site_data[cucm_resource_name])
+        print(f'Added the {cucm_resource_friendly_name} called `{site_data[cucm_resource_name]["name"]}` with a UUID of {response["return"]} to CUCM')
 
         response = service.updateLocation(name=site_data['location']['name'], relatedLocations=related_locations)
-        print(f'Updated the location called `{site_data["location"]["name"]}` with the data for Related Locations')
+        print(f'Updated the {cucm_resource_friendly_name} called `{site_data[cucm_resource_name]["name"]}` with the data for Related Locations')
 
     else:
-        print(f'The location `{site_data["location"]["name"]}` already existed in the CUCM so was not added.')
+        print(f'The {cucm_resource_friendly_name} `{site_data[cucm_resource_name]["name"]}` already existed in the CUCM so was not added.')
 
 ################################################################################
 #                   Add SRST
 ################################################################################
-if site_data.get('srst'):
+cucm_resource_friendly_name = "SRST Reference"
+cucm_resource_name = "srst" 
+
+if site_data.get(cucm_resource_name):
     need_to_add_location = True 
 
     srst_entries = service.listSrst(searchCriteria=search_all_names, returnedTags=list_attributes_to_return)
     
     # Checking to see if the object in the file already exists in the CUCM
-    for srst in srst_entries['return']['srst']:
-        if site_data['srst']['name'] == srst['name']:
+    for srst in srst_entries['return'][cucm_resource_name]:
+        if site_data[cucm_resource_name]['name'] == srst['name']:
             need_to_add_location = False 
 
     if need_to_add_location:
-        response = service.addSrst(site_data['srst'])
-        print(f'Added the SRST reference called `{site_data["srst"]["name"]}` with a UUID of {response["return"]} to CUCM')
+        response = service.addSrst(site_data[cucm_resource_name])
+        print(f'Added the {cucm_resource_friendly_name} called `{site_data[cucm_resource_name]["name"]}` with a UUID of {response["return"]} to CUCM')
 
     else:
-        print(f'The SRST reference `{site_data["srst"]["name"]}` already existed in the CUCM so was not added.')
+        print(f'The {cucm_resource_friendly_name} named `{site_data[cucm_resource_name]["name"]}` already existed in the CUCM so was not added.')
 
 ################################################################################
 #                   Add Regions
 ################################################################################
-if site_data.get('region'):
+cucm_resource_friendly_name = "Region"
+cucm_resource_name = "region" 
+
+if site_data.get(cucm_resource_name):
     need_to_add_location = True 
 
     region_entries = service.listRegion(searchCriteria=search_all_names, returnedTags=list_attributes_to_return)
     
     # Checking to see if the object in the file already exists in the CUCM
-    for region in region_entries['return']['region']:
-        if site_data['region']['name'] == region['name']:
+    for region in region_entries['return'][cucm_resource_name]:
+        if site_data[cucm_resource_name]['name'] == region['name']:
             need_to_add_location = False 
 
     if need_to_add_location:
-        response = service.addRegion(site_data['region'])
-        print(f'Added the Region called `{site_data["region"]["name"]}` with a UUID of {response["return"]} to CUCM')
+        response = service.addRegion(site_data[cucm_resource_name])
+        print(f'Added the {cucm_resource_friendly_name} called `{site_data[cucm_resource_name]["name"]}` with a UUID of {response["return"]} to CUCM')
 
     else:
-        print(f'The Region named `{site_data["srst"]["name"]}` already existed in the CUCM so was not added.')
+        print(f'The {cucm_resource_friendly_name} named `{site_data[cucm_resource_name]["name"]}` already existed in the CUCM so was not added.')
 
 ################################################################################
 #                   Add Media Resource List
 ################################################################################
+cucm_resource_friendly_name = "Media Resource Group List"
+cucm_resource_name = "mediaResourceList" 
 
+if site_data.get(cucm_resource_name):
+    need_to_add_location = True 
+
+    mrgl_entries = service.listMediaResourceList(searchCriteria=search_all_names, returnedTags=list_attributes_to_return)
+    
+    # Checking to see if the object in the file already exists in the CUCM
+    for mrgl in mrgl_entries['return'][cucm_resource_name]:
+        if site_data[cucm_resource_name]['name'] == mrgl['name']:
+            need_to_add_location = False 
+
+    if need_to_add_location:
+        response = service.addMediaResourceList(site_data[cucm_resource_name])
+        print(f'Added the {cucm_resource_friendly_name} called `{site_data[cucm_resource_name]["name"]}` with a UUID of {response["return"]} to CUCM')
+
+    else:
+        print(f'The {cucm_resource_friendly_name} named `{site_data[cucm_resource_name]["name"]}` already existed in the CUCM so was not added.')
 
 ################################################################################
 #                   Add Call Manager Group
 ################################################################################
+cucm_resource_friendly_name = "CallManager Group"
+cucm_resource_name = "callManagerGroup" 
+
+if site_data.get(cucm_resource_name):
+    need_to_add_location = True 
+
+    cmg_entries = service.listCallManagerGroup(searchCriteria=search_all_names, returnedTags=list_attributes_to_return)
+    
+    # Checking to see if the object in the file already exists in the CUCM
+    for cmg in cmg_entries['return'][cucm_resource_name]:
+        if site_data[cucm_resource_name]['name'] == cmg['name']:
+            need_to_add_location = False 
+
+    if need_to_add_location:
+        response = service.addCallManagerGroup(site_data[cucm_resource_name])
+        print(f'Added the {cucm_resource_friendly_name} called `{site_data[cucm_resource_name]["name"]}` with a UUID of {response["return"]} to CUCM')
+
+    else:
+        print(f'The {cucm_resource_friendly_name} named `{site_data[cucm_resource_name]["name"]}` already existed in the CUCM so was not added.')
 
 ################################################################################
 #                   Add Date Time Group
 ################################################################################
+cucm_resource_friendly_name = "Date/Time Group"
+cucm_resource_name = "dateTimeGroup" 
+
+if site_data.get(cucm_resource_name):
+    need_to_add_location = True 
+
+    dtg_entries = service.listDateTimeGroup(searchCriteria=search_all_names, returnedTags=list_attributes_to_return)
+    
+    # Checking to see if the object in the file already exists in the CUCM
+    for dtg in dtg_entries['return'][cucm_resource_name]:
+        if site_data[cucm_resource_name]['name'] == dtg['name']:
+            need_to_add_location = False 
+
+    if need_to_add_location:
+        response = service.addDateTimeGroup(site_data[cucm_resource_name])
+        print(f'Added the {cucm_resource_friendly_name} called `{site_data[cucm_resource_name]["name"]}` with a UUID of {response["return"]} to CUCM')
+
+    else:
+        print(f'The {cucm_resource_friendly_name} named `{site_data[cucm_resource_name]["name"]}` already existed in the CUCM so was not added.')
 
 ################################################################################
 #                   Add Device Pool
 ################################################################################
+cucm_resource_friendly_name = "Device Pool"
+cucm_resource_name = "devicePool" 
+
+if site_data.get(cucm_resource_name):
+    need_to_add_location = True 
+
+    dp_entries = service.listDevicePool(searchCriteria=search_all_names, returnedTags=list_attributes_to_return)
+    
+    # Checking to see if the object in the file already exists in the CUCM
+    for dp in dp_entries['return'][cucm_resource_name]:
+        if site_data[cucm_resource_name]['name'] == dp['name']:
+            need_to_add_location = False 
+
+    if need_to_add_location:
+        response = service.addDevicePool(site_data[cucm_resource_name])
+        print(f'Added the {cucm_resource_friendly_name} called `{site_data[cucm_resource_name]["name"]}` with a UUID of {response["return"]} to CUCM')
+
+    else:
+        print(f'The {cucm_resource_friendly_name} named `{site_data[cucm_resource_name]["name"]}` already existed in the CUCM so was not added.')
 

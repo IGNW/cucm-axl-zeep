@@ -69,6 +69,12 @@ DEBUG = False
 # These values should work with a DevNet sandbox
 # You may need to change them if you are working with your own CUCM server
 
+# If you're not using a certificate, this is how to supress insecure connection warnings
+SUPRESS_INSECURE_CONNECTION_WARNINGS = True
+
+if SUPRESS_INSECURE_CONNECTION_WARNINGS:
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # This class lets you view the incoming and outgoing http headers and/or XML
 class MyLoggingPlugin(Plugin):
