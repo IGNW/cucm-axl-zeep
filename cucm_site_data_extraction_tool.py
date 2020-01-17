@@ -78,6 +78,12 @@ DEBUG = False
 # These values should work with a DevNet sandbox
 # You may need to change them if you are working with your own CUCM server
 
+# If you're not using a certificate, this is how to supress insecure connection warnings
+SUPRESS_INSECURE_CONNECTION_WARNINGS = True
+
+if SUPRESS_INSECURE_CONNECTION_WARNINGS:
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # This class lets you view the incoming and outgoing http headers and/or XML
 class MyLoggingPlugin(Plugin):
@@ -288,9 +294,14 @@ if region_data['relatedRegions']:
 
         related_region_data.append(data)
 
+if related_region_data:
+    related_region = {'relatedRegion': related_region_data} 
+else:
+    related_region = None
+
 region_output_data = {
     'name': region_data['name'],
-    'relatedRegions': {'relatedRegion': related_region_data},
+    'relatedRegions': related_region,
     'defaultCodec': region_data['defaultCodec']
 }
 
@@ -347,14 +358,23 @@ if location_name:
         }
         between_location_data.append(data)
 
+    if related_location_data:
+        related_location = {'relatedLocation': related_location_data}
+    else:
+        related_location = None
+
+    if between_location_data:
+        between_location = {'betweenLocation': between_location_data}
+    else:
+        between_location = None
+
     location_output_data = {
         'name': location_data['name'],
-        'id': location_data['id'],
-        'relatedLocations': {'relatedLocation': related_location_data},
+        'relatedLocations': related_location,
         'withinAudioBandwidth': location_data['withinAudioBandwidth'],
         'withinVideoBandwidth': location_data['withinVideoBandwidth'],
         'withinImmersiveKbits': location_data['withinImmersiveKbits'],
-        'betweenLocations': {'betweenLocation': between_location_data}
+        'betweenLocations': between_location 
     }
 
     output_data['location'] = location_output_data
