@@ -49,7 +49,7 @@ from lxml import etree
 from requests import Session
 from requests.auth import HTTPBasicAuth
 
-from zeep import Client, Settings, Plugin
+from zeep import Client, Settings, Plugin, xsd
 from zeep.transports import Transport
 from zeep.cache import SqliteCache
 from zeep.exceptions import Fault
@@ -141,7 +141,7 @@ list_attributes_to_return = {
 #                   Read in site data configuration 
 ################################################################################
 #file_name = input("Input the exact file to read from the `site_configurations` folder: ")
-file_name = 'new_site.json'
+file_name = 'new_site2.json'
 data_file = Path('site_configurations') / f'{file_name}'
 
 if not data_file.exists():
@@ -175,6 +175,10 @@ if site_data.get(cucm_resource_name):
         # Removing the data and adding as an update after the new location is created.
         related_locations = site_data[cucm_resource_name]['relatedLocations']
         site_data[cucm_resource_name].pop('relatedLocations')
+
+        # If the between locations tag is empty, tell Zeep to ignore this parameter because it's missing
+        if site_data[cucm_resource_name]['betweenLocations'] is None:
+            site_data[cucm_resource_name]['betweenLocations'] = xsd.SkipValue
 
         response = service.addLocation(site_data[cucm_resource_name])
         print(f'Added the {cucm_resource_friendly_name} called `{site_data[cucm_resource_name]["name"]}` with a UUID of {response["return"]} to CUCM')
