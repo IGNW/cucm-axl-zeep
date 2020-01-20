@@ -252,6 +252,12 @@ if site_data.get(cucm_resource_name):
             need_to_add_location = False 
 
     if need_to_add_location:
+
+        # You can create a MRGL without members, but Zeep requires all values to be present
+        # This is how to work add an MRGL with no members
+        if site_data[cucm_resource_name]['members'] is None:
+            site_data[cucm_resource_name]['members'] = xsd.SkipValue
+
         response = service.addMediaResourceList(site_data[cucm_resource_name])
         print(f'Added the {cucm_resource_friendly_name} called `{site_data[cucm_resource_name]["name"]}` with a UUID of {response["return"]} to CUCM')
 
