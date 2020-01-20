@@ -196,13 +196,18 @@ date_time_group_name = output_data['devicePool']['dateTimeSettingName']
 date_time_group = service.getDateTimeGroup(name=date_time_group_name)
 date_time_group_data = date_time_group['return']['dateTimeGroup']
 ntp_ref_data = []
+
 # Strip out unneeded values from return data
-for ntp_ref in date_time_group_data['phoneNtpReferences']['selectedPhoneNtpReference']:
-    data = {
-        'phoneNtpName': ntp_ref['phoneNtpName']['_value_1'],
-        'selectionOrder': ntp_ref['selectionOrder']
-    }
-    ntp_ref_data.append(data)
+if not date_time_group_data['phoneNtpReferences']:
+    ntp_refs = None
+else:
+    for ntp_ref in date_time_group_data['phoneNtpReferences']['selectedPhoneNtpReference']:
+        data = {
+            'phoneNtpName': ntp_ref['phoneNtpName']['_value_1'],
+            'selectionOrder': ntp_ref['selectionOrder']
+        }
+        ntp_ref_data.append(data)
+    ntp_refs = {'selectedPhoneNtpReference': ntp_ref_data}
 
 date_time_group_output_data = {
     'name': date_time_group_data['name'],
@@ -210,7 +215,7 @@ date_time_group_output_data = {
     'separator': date_time_group_data['separator'],
     'dateformat': date_time_group_data['dateformat'],
     'timeFormat': date_time_group_data['timeFormat'],
-    'phoneNtpReferences': {'selectedPhoneNtpReference': ntp_ref_data}
+    'phoneNtpReferences': ntp_refs 
 }
 
 output_data['dateTimeGroup'] = date_time_group_output_data
@@ -252,18 +257,21 @@ if mrgl_name:
     mrgl_member_data = []
 
     # Strip out unneeded values from return data assuming there is data in the object
-    if mrgl_data['members']:
+    if not mrgl_data['members']:
+        mrgl_members = None
+    else:
         for member in mrgl_data['members']['member']:
             data = {
                 'mediaResourceGroupName': member['mediaResourceGroupName']['_value_1'],
                 'order': member['order']
             }
             mrgl_member_data.append(data)
+        mrgl_members = {'member': mrgl_member_data}
 
     mrgl_output_data = {
         'name': mrgl_data['name'],
         'clause': mrgl_data['clause'],
-        'members': {'member': mrgl_member_data}
+        'members': mrgl_members
     }
 
     output_data['mediaResourceList'] = mrgl_output_data
@@ -282,7 +290,9 @@ region_data = region['return']['region']
 related_region_data = []
 
 # Strip out unneeded values from return data assuming there is data in the object
-if region_data['relatedRegions']:
+if not region_data['relatedRegions']:
+    related_region = None
+else:
     for region in region_data['relatedRegions']['relatedRegion']:
         data = {
             'regionName': region['regionName']['_value_1'],
@@ -294,11 +304,7 @@ if region_data['relatedRegions']:
         }
 
         related_region_data.append(data)
-
-if related_region_data:
-    related_region = {'relatedRegion': related_region_data} 
-else:
-    related_region = None
+        related_region = {'relatedRegion': related_region_data} 
 
 region_output_data = {
     'name': region_data['name'],
@@ -314,7 +320,6 @@ output_data['region'] = region_output_data
 srst_name = output_data['devicePool']['srstName']
 
 region = service.getSrst(name=srst_name)
-
 srst_data = region['return']['srst']
 
 srst_output_data = {
@@ -327,7 +332,6 @@ srst_output_data = {
     'srstCertificatePort': srst_data['srstCertificatePort'],
     'isSecure': srst_data['isSecure']
 }
-
 output_data['srst'] = srst_output_data
 
 ################################################################################
@@ -342,14 +346,20 @@ if location_name:
     between_location_data = []
 
     # Strip out unneeded values from return data assuming there is data in the object
-    for rel_loc in location_data['relatedLocations']['relatedLocation']:
-        data = {
-            'locationName': rel_loc['locationName']['_value_1'],
-            'rsvpSetting': rel_loc['rsvpSetting']
-        }
-        related_location_data.append(data)
+    if not location_data['relatedLocations']:
+        related_location = None
+    else:
+        for rel_loc in location_data['relatedLocations']['relatedLocation']:
+            data = {
+                'locationName': rel_loc['locationName']['_value_1'],
+                'rsvpSetting': rel_loc['rsvpSetting']
+            }
+            related_location_data.append(data)
+        related_location = {'relatedLocation': related_location_data}
 
-    if location_data['betweenLocations']:
+    if not location_data['betweenLocations']:
+        between_location = None
+    else:
         for bet_loc in location_data['betweenLocations']['betweenLocation']:
             data = {
                 'locationName': bet_loc['locationName']['_value_1'],
@@ -359,16 +369,7 @@ if location_name:
                 'immersiveBandwidth': bet_loc['immersiveBandwidth']
             }
             between_location_data.append(data)
-
-    if related_location_data:
-        related_location = {'relatedLocation': related_location_data}
-    else:
-        related_location = None
-
-    if between_location_data:
         between_location = {'betweenLocation': between_location_data}
-    else:
-        between_location = None
 
     location_output_data = {
         'name': location_data['name'],
