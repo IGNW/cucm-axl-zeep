@@ -4,19 +4,38 @@ with the CUCM AXL SOAP API to make Administering the CUCM easier.
 
 Ths repo contains the following information
 - Information on installing Python and Zeep
-- Information on Installing, Configuring, and working with SOAP UI
-- Details on how each of the major category of API Calls works 
-- Some sample programs that 
+- Sample programs that show off the things you can do
 
 
 # Getting Started
 
 ## Install Core Software and Libraries
 - Install Python3
-- Install required Python3 libraries
+Navigate to https://python.org and download and install the appropriate version of 
+Python3 for your machine.
 
+Note: Some older machines come with Python2 by default.  Python3 will need to be installed
+on your system.  These tutorials were written with Python3.7.
+
+- Install required Python3 libraries
+The external libraries `zeep` and `jinja2` are required for these examples.
+
+Use the following processes to install the required dependencies
+On Mac/Linux
+    `pip3 install zeep`
+    `pip3 install jinja2`
+
+On Windows
+    `pip install zeep`
+    `pip install jinja2`
 
 # Sample Programs
+## Template
+### Generic Template to get you going
+`axl_zeep_template.py`
+Just copy the file, delete the sample code at the bottom, update the `creds.py` file and get writing.
+
+
 ## Data Exporter Use Cases
 ### Export Device Pool (site) and related objects to a JSON file
 `cucm_site_data_extraction_tool.py`
@@ -59,6 +78,9 @@ The tool will check if the object exists before attempting to build it.  If it d
 If you have to create numerious sites from an export, use Jinja2 to create the files quickly and
 consistently.
 
+
+
+**************Below this line sill under construction****************
 
 ### Create Custom CSV Reports by pulling data from the CUCM AXL API
 Scenario: The standard reports from the CUCM exporter don't have all the data you need in the right order.  You end up having to export multiple tables and merge them together.  Use a python script to automate this process.

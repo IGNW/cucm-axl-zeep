@@ -12,20 +12,26 @@ On Windows, choose the option to add to PATH environment variable
 
 If this is a fresh installation, update pip (you may need to use `pip3` on Linux or Mac)
 
+For Windows
     $ python -m pip install --upgrade pip
+
+For Linux/Mac
+    $ python3 -m pip install --upgrade pip
 
 Script Dependencies:
     lxml        # Installed when you install zeep
     requests    # Installed when you install zeep
     zeep
 
-Dependency Installation:
-
+For Windows
     $ pip install zeep
+
+For Linux
+    $ pip3 install zeep
 
 This will install automatically all of zeep dependencies, including lxml, requests
 
-Copyright (c) 2018 Cisco and/or its affiliates.
+Copyright (c) 2020 Cisco and/or its affiliates.
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights

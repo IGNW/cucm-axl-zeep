@@ -12,7 +12,11 @@ On Windows, choose the option to add to PATH environment variable
 
 If this is a fresh installation, update pip (you may need to use `pip3` on Linux or Mac)
 
+For Windows
     $ python -m pip install --upgrade pip
+
+For Linux/Mac
+    $ python3 -m pip install --upgrade pip
 
 Script Dependencies:
     lxml        # Installed when you install zeep
@@ -21,11 +25,15 @@ Script Dependencies:
 
 Dependency Installation:
 
+For Windows
     $ pip install zeep
+
+For Linux
+    $ pip3 install zeep
 
 This will install automatically all of zeep dependencies, including lxml, requests
 
-Copyright (c) 2018 Cisco and/or its affiliates.
+Copyright (c) 2020 Cisco and/or its affiliates.
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -122,5 +130,9 @@ service = client.create_service('{http://www.cisco.com/AXLAPIService/}AXLAPIBind
                                 'https://{cucm}:8443/axl/'.format(cucm=creds.CUCM_ADDRESS))
 
 
-# Add your AXL calls below here.  Examples will be provided below, but everything
+# Add your AXL calls below here.  Example(s) will be provided below, but everything
 # below this line can be deleted or commented out and replaced with your code.
+
+# This assumes that the `Default` device pool exists in the CUCM
+device_pool = service.getDevicePool(name="Default")
+print(device_pool)
