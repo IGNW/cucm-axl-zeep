@@ -34,12 +34,14 @@ On Windows
 ## Template
 ### Generic Template to get you going
 `axl_zeep_template.py`
+
 Just copy the file, delete the sample code at the bottom, update the `creds.py` file and get writing.
 
 
 ## Data Exporter Use Cases
 ### Export Device Pool (site) and related objects to a JSON file
 `cucm_site_data_extraction_tool.py`
+
 Enter a Device Pool name and export data from that object to a JSON file.  This export file is the file format
 for all the rest of the export tools.
 
@@ -52,6 +54,7 @@ full site export tool for your needs.
 
 ### Deploy a site based on a JSON file input
 `cucm_site_creation_tool.py`
+
 Input the name of a json file in the `site_configurations` folder.  Then will build out the objects
 in CUCM based on the settings in the file.
 
@@ -63,6 +66,7 @@ to customize the tool for your uses.
 
 ### Remove a site based on a JSON file input
 `cucm_site_removal_tool.py`
+
 Input the name of a json file in the `site_configurations` folder.  Then you can remove all the objects
 from CUCM that are also in the JSON file.
 
@@ -76,6 +80,7 @@ The tool will check if the object exists before attempting to build it.  If it d
 
 ### Convert an export to a Jinja2 Template to quickly and easily make lots of site config files
 `create_config_from_template.py`
+
 If you have to create numerious sites from an export, use Jinja2 to create the files quickly and
 consistently.
 
