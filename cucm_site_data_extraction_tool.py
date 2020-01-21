@@ -22,7 +22,7 @@ If this is a fresh installation, update pip (you may need to use `pip3` on Linux
 
 Script Dependencies:
     lxml        # Installed when you install zeep
-    requests    # Installed when you install zeep 
+    requests    # Installed when you install zeep
     zeep
 
 Dependency Installation:
@@ -56,8 +56,6 @@ from requests.auth import HTTPBasicAuth
 
 from zeep import Client, Settings, Plugin
 from zeep.transports import Transport
-from zeep.cache import SqliteCache
-from zeep.exceptions import Fault
 
 from pathlib import Path
 from datetime import datetime
@@ -74,7 +72,7 @@ DEBUG = False
 
 # If you have a pem file certificate for CUCM, uncomment and define it here
 
-#CERT = 'some.pem'
+# CERT = 'some.pem'
 
 # These values should work with a DevNet sandbox
 # You may need to change them if you are working with your own CUCM server
@@ -85,6 +83,7 @@ SUPRESS_INSECURE_CONNECTION_WARNINGS = True
 if SUPRESS_INSECURE_CONNECTION_WARNINGS:
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 
 # This class lets you view the incoming and outgoing http headers and/or XML
 class MyLoggingPlugin(Plugin):
@@ -109,7 +108,7 @@ session = Session()
 # We avoid certificate verification by default, but you can uncomment and set
 # your certificate here, and comment out the False setting
 
-#session.verify = CERT
+# session.verify = CERT
 session.verify = False
 session.auth = HTTPBasicAuth(creds.USERNAME, creds.PASSWORD)
 
@@ -154,7 +153,7 @@ device_pool_attributes_to_return = {
 
 
 device_pools = service.listDevicePool(
-    searchCriteria={'name': '%'}, returnedTags=device_pool_attributes_to_return)
+    searchCriteria=search_all_names, returnedTags=device_pool_attributes_to_return)
 
 # Determine if the desired Device Pool is in the list of returned data
 found_device_pool = False
@@ -182,7 +181,7 @@ device_pool_output_data = {
     'mediaResourceListName': device_pool_data['mediaResourceListName']['_value_1'],
     'regionName': device_pool_data['regionName']['_value_1'],
     'srstName': device_pool_data['srstName']['_value_1'],
-    'locationName': device_pool_data['locationName']['_value_1'],
+    'locationName': device_pool_data['locationName']['_value_1']
 }
 
 output_data['devicePool'] = device_pool_output_data
@@ -215,7 +214,7 @@ date_time_group_output_data = {
     'separator': date_time_group_data['separator'],
     'dateformat': date_time_group_data['dateformat'],
     'timeFormat': date_time_group_data['timeFormat'],
-    'phoneNtpReferences': ntp_refs 
+    'phoneNtpReferences': ntp_refs
 }
 
 output_data['dateTimeGroup'] = date_time_group_output_data
@@ -304,7 +303,7 @@ else:
         }
 
         related_region_data.append(data)
-        related_region = {'relatedRegion': related_region_data} 
+        related_region = {'relatedRegion': related_region_data}
 
 region_output_data = {
     'name': region_data['name'],
@@ -377,7 +376,7 @@ if location_name:
         'withinAudioBandwidth': location_data['withinAudioBandwidth'],
         'withinVideoBandwidth': location_data['withinVideoBandwidth'],
         'withinImmersiveKbits': location_data['withinImmersiveKbits'],
-        'betweenLocations': between_location 
+        'betweenLocations': between_location
     }
 
     output_data['location'] = location_output_data
@@ -396,4 +395,3 @@ with open(output_file, 'w') as out:
     output_json = json.dumps(output_data, indent=2)
     out.write(output_json)
     print(f"Site Data written to the file `{output_file}` successfully.")
-

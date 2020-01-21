@@ -1,3 +1,4 @@
 *.json
 Pipfile*
 .DS_Store
+.flake8

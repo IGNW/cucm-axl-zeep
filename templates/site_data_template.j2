@@ -1,0 +1,94 @@
+{
+  "devicePool": {
+    "name": "DP_{{ site_name }}",
+    "dateTimeSettingName": "DTG_{{ site_name }}",
+    "callManagerGroupName": "CMG_{{ site_name }}",
+    "mediaResourceListName": "MRGL_{{ site_name }}",
+    "regionName": "REG_{{ site_name }}",
+    "srstName": "SRST_{{ site_name }}",
+    "locationName": "LOC_{{ site_name }}"
+  },
+  "dateTimeGroup": {
+    "name": "DTG_{{ site_name }}",
+    "timeZone": "America/Los_Angeles",
+    "separator": "/",
+    "dateformat": "M/D/Y",
+    "timeFormat": "24-hour",
+    "phoneNtpReferences": {
+      "selectedPhoneNtpReference": [
+        {
+          "phoneNtpName": "10.254.252.41",
+          "selectionOrder": 0
+        },
+        {
+          "phoneNtpName": "10.254.252.42",
+          "selectionOrder": 1
+        }
+      ]
+    }
+  },
+  "callManagerGroup": {
+    "name": "CMG_{{ site_name }}",
+    "tftpDefault": "false",
+    "members": {
+      "member": [
+        {
+          "callManagerName": "CM_cucm",
+          "priority": 0
+        }
+      ]
+    }
+  },
+  "mediaResourceList": {
+    "name": "MRGL_{{ site_name }}",
+    "clause": "MRG_SW",
+    "members": {
+      "member": [
+        {
+          "mediaResourceGroupName": "MRG_SW",
+          "order": 0
+        }
+      ]
+    }
+  },
+  "region": {
+    "name": "REG_{{ site_name }}",
+    "relatedRegions": null,
+    "defaultCodec": null
+  },
+  "srst": {
+    "name": "SRST_{{ site_name }}",
+    "port": 2000,
+    "ipAddress": "10.20.30.40",
+    "ipv6Address": null,
+    "SipNetwork": null,
+    "SipPort": 5060,
+    "srstCertificatePort": 2445,
+    "isSecure": "false"
+  },
+  "location": {
+    "name": "LOC_{{ site_name }}",
+    "relatedLocations": {
+      "relatedLocation": [
+        {
+          "locationName": "LOC_{{ site_name }}",
+          "rsvpSetting": "No Reservation"
+        }
+      ]
+    },
+    "withinAudioBandwidth": 0,
+    "withinVideoBandwidth": 0,
+    "withinImmersiveKbits": 0,
+    "betweenLocations": {
+      "betweenLocation": [
+        {
+          "locationName": "Hub_None",
+          "weight": 50,
+          "audioBandwidth": 0,
+          "videoBandwidth": 384,
+          "immersiveBandwidth": 384
+        }
+      ]
+    }
+  }
+}

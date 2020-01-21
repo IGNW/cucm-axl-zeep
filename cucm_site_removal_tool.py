@@ -51,8 +51,6 @@ from requests.auth import HTTPBasicAuth
 
 from zeep import Client, Settings, Plugin
 from zeep.transports import Transport
-from zeep.cache import SqliteCache
-from zeep.exceptions import Fault
 
 from pathlib import Path
 
@@ -79,6 +77,7 @@ SUPRESS_INSECURE_CONNECTION_WARNINGS = True
 if SUPRESS_INSECURE_CONNECTION_WARNINGS:
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 
 # This class lets you view the incoming and outgoing http headers and/or XML
 class MyLoggingPlugin(Plugin):
@@ -138,10 +137,9 @@ list_attributes_to_return = {
 }
 
 ################################################################################
-#                   Read in site data configuration 
+#                   Read in site data configuration
 ################################################################################
-#file_name = input("Input the exact file to read from the `site_configurations` folder: ")
-file_name = 'new_site2.json'
+file_name = input("Input the exact file to read from the `site_configurations` folder: ")
 data_file = Path('site_configurations') / f'{file_name}'
 
 if not data_file.exists():
@@ -165,21 +163,20 @@ with open(data_file) as df:
 #                   Remove Device Pool
 ################################################################################
 cucm_resource_friendly_name = "Device Pool"
-cucm_resource_name = "devicePool" 
+cucm_resource_name = "devicePool"
 
 if site_data.get(cucm_resource_name):
     need_to_remove_location = False
 
     dp_entries = service.listDevicePool(searchCriteria=search_all_names, returnedTags=list_attributes_to_return)
-    
+
     # Checking to see if the object in the file already exists in the CUCM
     for dp in dp_entries['return'][cucm_resource_name]:
         if site_data[cucm_resource_name]['name'] == dp['name']:
-            need_to_remove_location = True 
+            need_to_remove_location = True
 
     if need_to_remove_location:
         response = service.removeDevicePool(name=site_data[cucm_resource_name]['name'])
-        print(response)
         print(f'Removed the {cucm_resource_friendly_name} called `{site_data[cucm_resource_name]["name"]}` with a UUID of {response["return"]} from CUCM.')
 
     else:
@@ -195,7 +192,7 @@ if site_data.get(cucm_resource_name):
     need_to_remove_location = False
 
     dtg_entries = service.listDateTimeGroup(searchCriteria=search_all_names, returnedTags=list_attributes_to_return)
-    
+
     # Checking to see if the object in the file already exists in the CUCM
     for dtg in dtg_entries['return'][cucm_resource_name]:
         if site_data[cucm_resource_name]['name'] == dtg['name']:
@@ -212,17 +209,17 @@ if site_data.get(cucm_resource_name):
 #                   Remove Call Manager Group
 ################################################################################
 cucm_resource_friendly_name = "CallManager Group"
-cucm_resource_name = "callManagerGroup" 
+cucm_resource_name = "callManagerGroup"
 
 if site_data.get(cucm_resource_name):
-    need_to_remove_location = False 
+    need_to_remove_location = False
 
     cmg_entries = service.listCallManagerGroup(searchCriteria=search_all_names, returnedTags=list_attributes_to_return)
-    
+
     # Checking to see if the object in the file already exists in the CUCM
     for cmg in cmg_entries['return'][cucm_resource_name]:
         if site_data[cucm_resource_name]['name'] == cmg['name']:
-            need_to_remove_location = True 
+            need_to_remove_location = True
 
     if need_to_remove_location:
         response = service.removeCallManagerGroup(name=site_data[cucm_resource_name]['name'])
@@ -235,17 +232,17 @@ if site_data.get(cucm_resource_name):
 #                   Remove Media Resource List
 ################################################################################
 cucm_resource_friendly_name = "Media Resource Group List"
-cucm_resource_name = "mediaResourceList" 
+cucm_resource_name = "mediaResourceList"
 
 if site_data.get(cucm_resource_name):
-    need_to_remove_location = False 
+    need_to_remove_location = False
 
     mrgl_entries = service.listMediaResourceList(searchCriteria=search_all_names, returnedTags=list_attributes_to_return)
-    
+
     # Checking to see if the object in the file already exists in the CUCM
     for mrgl in mrgl_entries['return'][cucm_resource_name]:
         if site_data[cucm_resource_name]['name'] == mrgl['name']:
-            need_to_remove_location = True 
+            need_to_remove_location = True
 
     if need_to_remove_location:
         response = service.removeMediaResourceList(name=site_data[cucm_resource_name]['name'])
@@ -258,17 +255,17 @@ if site_data.get(cucm_resource_name):
 #                   Remove Regions
 ################################################################################
 cucm_resource_friendly_name = "Region"
-cucm_resource_name = "region" 
+cucm_resource_name = "region"
 
 if site_data.get(cucm_resource_name):
-    need_to_remove_location = False 
+    need_to_remove_location = False
 
     region_entries = service.listRegion(searchCriteria=search_all_names, returnedTags=list_attributes_to_return)
-    
+
     # Checking to see if the object in the file already exists in the CUCM
     for region in region_entries['return'][cucm_resource_name]:
         if site_data[cucm_resource_name]['name'] == region['name']:
-            need_to_remove_location = True 
+            need_to_remove_location = True
 
     if need_to_remove_location:
         response = service.removeRegion(name=site_data[cucm_resource_name]['name'])
@@ -281,17 +278,17 @@ if site_data.get(cucm_resource_name):
 #                   Remove SRST
 ################################################################################
 cucm_resource_friendly_name = "SRST Reference"
-cucm_resource_name = "srst" 
+cucm_resource_name = "srst"
 
 if site_data.get(cucm_resource_name):
-    need_to_remove_location = False 
+    need_to_remove_location = False
 
     srst_entries = service.listSrst(searchCriteria=search_all_names, returnedTags=list_attributes_to_return)
-    
+
     # Checking to see if the object in the file already exists in the CUCM
     for srst in srst_entries['return'][cucm_resource_name]:
         if site_data[cucm_resource_name]['name'] == srst['name']:
-            need_to_remove_location = True 
+            need_to_remove_location = True
 
     if need_to_remove_location:
         response = service.removeSrst(name=site_data[cucm_resource_name]['name'])
@@ -304,17 +301,17 @@ if site_data.get(cucm_resource_name):
 #                   Remove Locations
 ################################################################################
 cucm_resource_friendly_name = "Location"
-cucm_resource_name = "location" 
+cucm_resource_name = "location"
 
 if site_data.get(cucm_resource_name):
-    need_to_remove_location = False 
+    need_to_remove_location = False
 
     cucm_locations = service.listLocation(searchCriteria=search_all_names, returnedTags=list_attributes_to_return)
 
     # Checking to see if the object in the file already exists in the CUCM
     for location in cucm_locations['return'][cucm_resource_name]:
         if site_data[cucm_resource_name]['name'] == location['name']:
-            need_to_remove_location = True 
+            need_to_remove_location = True
 
     if need_to_remove_location:
         response = service.removeLocation(name=site_data[cucm_resource_name]['name'])
@@ -322,4 +319,3 @@ if site_data.get(cucm_resource_name):
 
     else:
         print(f'The {cucm_resource_friendly_name} `{site_data[cucm_resource_name]["name"]}` did not exist in the CUCM so was not added.')
-
