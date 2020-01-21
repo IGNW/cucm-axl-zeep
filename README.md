@@ -45,8 +45,8 @@ Just copy the file, delete the sample code at the bottom, update the `creds.py` 
 Enter a Device Pool name and export data from that object to a JSON file.  This export file is the file format
 for all the rest of the export tools.
 
-You can take the names in the output and modify them.  This give a way to export data, modify, and quickly
-import it back into the CUCM.
+You can modify the output file and use that as input to the site creation tool.  
+This give a way to export data, modify, and quickly import it back into the CUCM.
 
 NOTE: This program does not export all the data for a site, but enough to give you an idea of how to build out a
 full site export tool for your needs.
