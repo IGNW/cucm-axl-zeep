@@ -1,0 +1,26 @@
+<html>
+    <head>
+      {% if title %}
+      <title>{{ title }} - CUCM API Tool</title>
+      {% else %}
+      <title>Welcome to Cisco's CUCM Tool</title>
+      {% endif %}
+    </head>
+    <body>
+        <div>
+            CUCM API Tool: 
+            <a href="/">Home</a></div>
+            <a href="/cucm_login">Login</a>
+        <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </body>
+</html>
