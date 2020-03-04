@@ -9,18 +9,10 @@
     <body>
         <div>
             CUCM API Tool: 
-            <a href="/">Home</a></div>
-            <a href="/cucm_login">Login</a>
+            <a href="/">Home</a>
+            <a href="{{ url_for('cucm_list_device_pools') }}">List Device Pools</a>
+        </div>
         <hr>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
+    {% block content %}{% endblock %}
     </body>
 </html>

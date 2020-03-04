@@ -5,20 +5,26 @@
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=32) }}
-            {% for error in form.username.errors %}
+            {{ form.cucm_ip.label }}<br>
+            {{ form.cucm_ip(size=32) }}
+            {% for error in form.cucm_ip.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=32) }}
-            {% for error in form.password.errors %}
+            {{ form.cucm_username.label }}<br>
+            {{ form.cucm_username(size=32) }}
+            {% for error in form.cucm_username.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
-        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+        <p>
+            {{ form.cucm_password.label }}<br>
+            {{ form.cucm_password(size=32) }}
+            {% for error in form.cucm_password.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
         <p>{{ form.submit() }}</p>
     </form>
 {% endblock %}
