@@ -4,8 +4,11 @@ from requests.auth import HTTPBasicAuth
 
 from zeep import Client, Settings, Plugin
 from zeep.transports import Transport
+from zeep.helpers import serialize_object
 
 from pathlib import Path
+
+from flask import session
 
 
 def connect_to_cucm(username=None, password=None, cucm_ip=None):
@@ -28,12 +31,12 @@ def connect_to_cucm(username=None, password=None, cucm_ip=None):
             xml = etree.tostring(envelope, pretty_print=True, encoding='unicode')
             print(f'\nResponse\n-------\nHeaders:\n{http_headers}\n\nBody:\n{xml}')
 
-    session = Session()
+    sess = Session()
 
-    session.verify = False
-    session.auth = HTTPBasicAuth(username, password)
+    sess.verify = False
+    sess.auth = HTTPBasicAuth(username, password)
 
-    transport = Transport(session=session, timeout=10)
+    transport = Transport(session=sess, timeout=10)
     settings = Settings(strict=False, xml_huge_tree=True)
 
     plugin = [MyLoggingPlugin()] if DEBUG else []
@@ -44,3 +47,34 @@ def connect_to_cucm(username=None, password=None, cucm_ip=None):
                                     'https://{cucm}:8443/axl/'.format(cucm=cucm_ip))
 
     return service
+
+
+def list_users():
+    cucm = connect_to_cucm(username=session.get('cucm_username'), password=session.get('cucm_password'), cucm_ip=session.get('cucm_ip'))
+    returned_data = cucm.listUser(searchCriteria={'userid': '%'}, returnedTags={'userid': '', 'firstName': '', 'lastName': ''})
+    users_tuple = [(f"{x['userid']}", f"{x['firstName']} {x['lastName']}") for x in returned_data['return']['user']]
+
+    return users_tuple
+
+
+def get_user():
+    userid = session.get('selected_user')
+    cucm = connect_to_cucm(username=session.get('cucm_username'), password=session.get('cucm_password'), cucm_ip=session.get('cucm_ip'))
+    returned_data = cucm.getUser(userid=userid)
+    return serialize_object(returned_data['return']['user'])
+
+
+def update_user():
+    data = session.get('user_data_to_update')
+    cucm = connect_to_cucm(username=session.get('cucm_username'), password=session.get('cucm_password'), cucm_ip=session.get('cucm_ip'))
+
+    # The **data is unpacking a dictionary to be used as parameters for the function
+    returned_data = cucm.updateUser(**data)
+    return serialize_object(returned_data)
+
+
+def list_device_pools():
+    cucm = connect_to_cucm(username=session.get('cucm_username'), password=session.get('cucm_password'), cucm_ip=session.get('cucm_ip'))
+    returned_data = cucm.listDevicePool(searchCriteria={'name': '%'}, returnedTags={'name': ''})
+    device_pools = [x['name'] for x in returned_data['return']['devicePool']]
+    return device_pools

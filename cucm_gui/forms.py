@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField
-from wtforms.validators import DataRequired, IPAddress, InputRequired 
+from wtforms.validators import DataRequired, IPAddress, InputRequired
 
 
 class LoginForm(FlaskForm):
@@ -9,18 +9,21 @@ class LoginForm(FlaskForm):
     cucm_password = PasswordField('CUCM Password', validators=[DataRequired()])
     submit = SubmitField('Sign In')
 
+
 class DevicePool(FlaskForm):
     dp = SelectField('Select Device Pool')
     submit = SubmitField('Submit Selection')
 
+
 class Users(FlaskForm):
-    user = SelectField('Select a User', validators=[InputRequired()] )
+    user = SelectField('Select a User', validators=[InputRequired()])
     submit = SubmitField('Select User')
 
+
 class User(FlaskForm):
-    first_name = StringField('First Name')
-    last_name = StringField('Last Name')
-    display_name = StringField('Display Name')
+    firstName = StringField('First Name')
+    lastName = StringField('Last Name')
+    displayName = StringField('Display Name')
     submit = SubmitField('Update User')
 
 

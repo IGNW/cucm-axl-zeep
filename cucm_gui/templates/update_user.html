@@ -5,23 +5,23 @@
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <p>
-            {{ form.first_name.label }}<br>
-            {{ form.first_name() }}
-            {% for error in form.first_name.errors %}
+            {{ form.firstName.label }}<br>
+            {{ form.firstName() }}
+            {% for error in form.firstName.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.last_name.label }}<br>
-            {{ form.last_name() }}
-            {% for error in form.last_name.errors %}
+            {{ form.lastName.label }}<br>
+            {{ form.lastName() }}
+            {% for error in form.lastName.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.display_name.label }}<br>
-            {{ form.display_name() }}
-            {% for error in form.display_name.errors %}
+            {{ form.displayName.label }}<br>
+            {{ form.displayName() }}
+            {% for error in form.displayName.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
