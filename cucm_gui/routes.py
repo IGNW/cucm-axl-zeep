@@ -1,15 +1,8 @@
 from cucm_gui import app
-from flask import render_template, flash, redirect, url_for, session
-from cucm_gui.forms import LoginForm
+from flask import render_template, flash, redirect, url_for, session 
+from cucm_gui.forms import LoginForm, DevicePool, Users, User
 
-from lxml import etree
-from requests import Session
-from requests.auth import HTTPBasicAuth
-
-from zeep import Client, Settings, Plugin
-from zeep.transports import Transport
-
-from pathlib import Path
+from cucm_gui.cucm import connect_to_cucm
 
 
 @app.route('/')
@@ -36,40 +29,62 @@ def cucm_device_pools():
     device_pools = [x['name'] for x in returned_data['return']['devicePool']]
     return render_template('cucm_device_pools.html', title='CUCM Device Pools', device_pools=device_pools)
 
+@app.route('/list_users', methods=['GET', 'POST'])
+def list_users():
+    form = LoginForm()
+    if form.validate_on_submit():
+        session['cucm_username'] = form.cucm_username.data
+        session['cucm_password'] = form.cucm_password.data
+        session['cucm_ip'] = form.cucm_ip.data
+        flash(f'Returned data from the CUCM at IP: {form.cucm_ip.data}')
+        return redirect(url_for('select_user'))
+    return render_template('cucm_login.html', title='CUCM Data', form=form)
 
-def connect_to_cucm(username=None, password=None, cucm_ip=None):
-    WSDL_FILE = str(Path('schema') / 'AXLAPI.wsdl')
+@app.route('/select_user', methods=['GET', 'POST'])
+def select_user():
+    form = Users()
+    if form.is_submitted():
+        session['selected_user'] = form.user.data
+        return redirect(url_for('update_user'))  
+    else:
+        cucm = connect_to_cucm(username=session.get('cucm_username'), password=session.get('cucm_password'), cucm_ip=session.get('cucm_ip'))
+        returned_data = cucm.listUser(searchCriteria={'userid': '%'}, returnedTags={'userid': '', 'firstName': '', 'lastName': ''})
+        users = [(f"{x['userid']}", f"{x['firstName']} {x['lastName']}")  for x in returned_data['return']['user']]
+        form.user.choices = users
+        return render_template('select_user.html', title="Select User", form=form)
 
-    DEBUG = False
-    SUPRESS_INSECURE_CONNECTION_WARNINGS = True
+@app.route('/update_user', methods=['GET', 'POST'])
+def update_user():
+    form = User()
+    cucm = connect_to_cucm(username=session.get('cucm_username'), password=session.get('cucm_password'), cucm_ip=session.get('cucm_ip'))
+    userid = session.get('selected_user')
+    if form.validate_on_submit():
+        print(form.data)
+        flash(f'Updated User: {form.data}')
+        return redirect(url_for('main_page'))
+    else:
+        returned_data = cucm.getUser(userid=userid)
+        user_data = returned_data['return']['user']
 
-    if SUPRESS_INSECURE_CONNECTION_WARNINGS:
-        import urllib3
-        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        form.first_name.data = user_data['firstName']
+        form.last_name.data = user_data['lastName']
+        form.display_name.data = user_data['displayName']
 
-    # This class lets you view the incoming and outgoing http headers and/or XML
-    class MyLoggingPlugin(Plugin):
-        def egress(self, envelope, http_headers, operation, binding_options):
-            xml = etree.tostring(envelope, pretty_print=True, encoding='unicode')
-            print(f'\nRequest\n-------\nHeaders:\n{http_headers}\n\nBody:\n{xml}')
+        print(form.first_name.default)
+        return render_template('update_user.html', title="Update User", form=form)
 
-        def ingress(self, envelope, http_headers, operation):
-            xml = etree.tostring(envelope, pretty_print=True, encoding='unicode')
-            print(f'\nResponse\n-------\nHeaders:\n{http_headers}\n\nBody:\n{xml}')
 
-    session = Session()
+@app.route('/test', methods=['GET', 'POST'])
+def test():
+    info = [
+        ('thing44', 'Thing 44'),
+        ('thing1', 'Thing 1'),
+        ('thing2', 'Thing 2'),
+        ('thing3', 'Thing 3')
+    ]
+    form = DevicePool() 
+    form.dp.choices = info
+    return render_template('test.html', title='test', form=form)
+    
 
-    session.verify = False
-    session.auth = HTTPBasicAuth(username, password)
 
-    transport = Transport(session=session, timeout=10)
-    settings = Settings(strict=False, xml_huge_tree=True)
-
-    plugin = [MyLoggingPlugin()] if DEBUG else []
-
-    client = Client(WSDL_FILE, settings=settings, transport=transport, plugins=plugin)
-
-    service = client.create_service('{http://www.cisco.com/AXLAPIService/}AXLAPIBinding',
-                                    'https://{cucm}:8443/axl/'.format(cucm=cucm_ip))
-
-    return service

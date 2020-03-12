@@ -2,15 +2,7 @@
 
 {% block content %}
     <h1>CUCM Device Pools</h1>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <ul>
-        {% for message in messages %}
-        <li>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    {% endwith %}
+    This is a basic example of getting info from CUCM and displaying it on the page
     {% for dp in device_pools %}
     {{ dp }}<br>
     {% endfor %}
