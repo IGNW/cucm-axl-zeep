@@ -25,6 +25,16 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
+        {% if ldap_form %}
+        <p>
+            {{ ldap_form.include_ldap.label }}<br>
+            {{ ldap_form.include_ldap() }}
+            {% for error in ldap_form.include_ldap.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        {% endif %}
         <p>{{ form.submit() }}</p>
     </form>
+
 {% endblock %}

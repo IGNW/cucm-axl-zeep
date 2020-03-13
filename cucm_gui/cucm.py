@@ -50,11 +50,27 @@ def connect_to_cucm(username=None, password=None, cucm_ip=None):
 
 
 def list_users():
+    # Connect to CUCM and pull all the users
     cucm = connect_to_cucm(username=session.get('cucm_username'), password=session.get('cucm_password'), cucm_ip=session.get('cucm_ip'))
     returned_data = cucm.listUser(searchCriteria={'userid': '%'}, returnedTags={'userid': '', 'firstName': '', 'lastName': ''})
-    users_tuple = [(f"{x['userid']}", f"{x['firstName']} {x['lastName']}") for x in returned_data['return']['user']]
 
-    return users_tuple
+    # Connect to the CUCM DB and pull which users are local users
+    sql_query = "select userid from enduser where islocaluser = 't'"
+    query_results = cucm.executeSQLQuery(sql=sql_query)
+    local_users = [x[0].text for x in query_results['return']['row']]
+
+    # The listUser AXL Call doesn't include if the user is LDAP or Local User.
+    # This pulls all the local users directly from the database and filters
+    users_data = []
+    for user in returned_data['return']['user']:
+        # Filter out the non ldap users
+        if not session['include_ldap_users'] and user['userid'] not in local_users:
+            pass
+        else:
+            # The WTForms library requires a list of Tuples to create dynamic UI drop downs
+            users_data.append((f"{user['userid']}", f"{user['firstName']} {user['lastName']}"))
+
+    return users_data
 
 
 def get_user():
@@ -78,3 +94,32 @@ def list_device_pools():
     returned_data = cucm.listDevicePool(searchCriteria={'name': '%'}, returnedTags={'name': ''})
     device_pools = [x['name'] for x in returned_data['return']['devicePool']]
     return device_pools
+
+
+def list_user_groups():
+    cucm = connect_to_cucm(username=session.get('cucm_username'), password=session.get('cucm_password'), cucm_ip=session.get('cucm_ip'))
+    returned_data = cucm.listUserGroup(searchCriteria={'name': '%'}, returnedTags={'name': ''})
+
+    user_groups = []
+
+    for group in returned_data['return']['userGroup']:
+        # Puts the data into a list of tuples so it can be passed into the selector form
+        group_tuple = ({"name": group["name"]}, group["name"])
+        user_groups.append(group_tuple)
+
+    return user_groups
+
+
+def is_ldap_user():
+    userid = session.get('selected_user')
+    cucm = connect_to_cucm(username=session.get('cucm_username'), password=session.get('cucm_password'), cucm_ip=session.get('cucm_ip'))
+
+    sql_query = f"select islocaluser from enduser where userid = '{userid}'"
+    query_results = cucm.executeSQLQuery(sql=sql_query)
+
+    for item in query_results['return']['row']:
+        # The field in the CUCM refers to the user being a local user or not
+        if item[0].text == 't':
+            return False
+        else:
+            return True
