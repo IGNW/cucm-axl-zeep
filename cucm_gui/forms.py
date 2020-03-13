@@ -1,11 +1,16 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, BooleanField, SelectMultipleField
 from wtforms.validators import DataRequired, IPAddress, InputRequired
+import os
+from dotenv import load_dotenv
 
 
 class LoginForm(FlaskForm):
-    cucm_ip = StringField('CUCM IP Address', default="10.50.4.20", validators=[DataRequired(), IPAddress()])
-    cucm_username = StringField('CUCM Username', default="admin", validators=[DataRequired()])
+    load_dotenv()
+    default_host = os.environ.get('DEFAULT_CUCM_HOST')
+    default_username = os.environ.get('DEFAULT_CUCM_LOGIN')
+    cucm_ip = StringField('CUCM IP Address', default=default_host, validators=[DataRequired(), IPAddress()])
+    cucm_username = StringField('CUCM Username', default=default_username, validators=[DataRequired()])
     cucm_password = PasswordField('CUCM Password', validators=[DataRequired()])
     submit = SubmitField('Sign In')
 
