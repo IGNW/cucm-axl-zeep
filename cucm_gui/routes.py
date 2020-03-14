@@ -48,7 +48,6 @@ def select_user():
     form = Users()
     if form.is_submitted():
         session['selected_user'] = form.user.data
-        session['is_ldap_user'] = cucm.is_ldap_user()
         return redirect(url_for('update_user'))
     else:
         users = cucm.list_users()
@@ -97,6 +96,7 @@ def update_user():
     else:
         user_data = cucm.get_user()
         session['user_data'] = user_data
+        session['is_ldap_user'] = cucm.is_ldap_user()
 
         # Since the data in the form is a string version of a dictionary
         # Must make the existing selections match the data format
@@ -105,14 +105,17 @@ def update_user():
         else:
             user_groups = []
 
-        system_user_groups = cucm.list_user_groups()
-        session['system_user_groups'] = system_user_groups
+        # Get all the Application User Groups out of the CUCM
+        # So they can be used in the GUI
+        session['system_user_groups'] = cucm.list_user_groups() 
 
         form.firstName.data = user_data['firstName']
         form.lastName.data = user_data['lastName']
         form.displayName.data = user_data['displayName']
 
-        form.userGroup.choices = system_user_groups
+        # Passes the choices and already selected values into the
+        # Multiple Select form in the next page
+        form.userGroup.choices = session['system_user_groups'] 
         form.userGroup.data = user_groups
 
         return render_template('update_user.html',

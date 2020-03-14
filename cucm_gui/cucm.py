@@ -51,11 +51,15 @@ def connect_to_cucm(username=None, password=None, cucm_ip=None):
 
 def list_users():
     # Connect to CUCM and pull all the users
-    cucm = connect_to_cucm(username=session.get('cucm_username'), password=session.get('cucm_password'), cucm_ip=session.get('cucm_ip'))
-    returned_data = cucm.listUser(searchCriteria={'userid': '%'}, returnedTags={'userid': '', 'firstName': '', 'lastName': ''})
+    cucm = connect_to_cucm(username=session.get('cucm_username'),
+                           password=session.get('cucm_password'),
+                           cucm_ip=session.get('cucm_ip'))
+
+    returned_data = cucm.listUser(searchCriteria={'userid': '%'},
+                                  returnedTags={'userid': '', 'firstName': '', 'lastName': ''})
 
     # Connect to the CUCM DB and pull which users are local users
-    sql_query = "select userid from enduser where islocaluser = 't'"
+    sql_query = "select userid from enduser where fkdirectorypluginconfig is NULL"
     query_results = cucm.executeSQLQuery(sql=sql_query)
     local_users = [x[0].text for x in query_results['return']['row']]
 
@@ -63,7 +67,7 @@ def list_users():
     # This pulls all the local users directly from the database and filters
     users_data = []
     for user in returned_data['return']['user']:
-        # Filter out the non ldap users
+        # Filter out the ldap users
         if not session['include_ldap_users'] and user['userid'] not in local_users:
             pass
         else:
@@ -75,14 +79,19 @@ def list_users():
 
 def get_user():
     userid = session.get('selected_user')
-    cucm = connect_to_cucm(username=session.get('cucm_username'), password=session.get('cucm_password'), cucm_ip=session.get('cucm_ip'))
+    cucm = connect_to_cucm(username=session.get('cucm_username'),
+                           password=session.get('cucm_password'),
+                           cucm_ip=session.get('cucm_ip'))
+
     returned_data = cucm.getUser(userid=userid)
     return serialize_object(returned_data['return']['user'])
 
 
 def update_user():
     data = session.get('user_data_to_update')
-    cucm = connect_to_cucm(username=session.get('cucm_username'), password=session.get('cucm_password'), cucm_ip=session.get('cucm_ip'))
+    cucm = connect_to_cucm(username=session.get('cucm_username'),
+                           password=session.get('cucm_password'),
+                           cucm_ip=session.get('cucm_ip'))
 
     # The **data is unpacking a dictionary to be used as parameters for the function
     returned_data = cucm.updateUser(**data)
@@ -90,14 +99,20 @@ def update_user():
 
 
 def list_device_pools():
-    cucm = connect_to_cucm(username=session.get('cucm_username'), password=session.get('cucm_password'), cucm_ip=session.get('cucm_ip'))
+    cucm = connect_to_cucm(username=session.get('cucm_username'),
+                           password=session.get('cucm_password'),
+                           cucm_ip=session.get('cucm_ip'))
+
     returned_data = cucm.listDevicePool(searchCriteria={'name': '%'}, returnedTags={'name': ''})
     device_pools = [x['name'] for x in returned_data['return']['devicePool']]
     return device_pools
 
 
 def list_user_groups():
-    cucm = connect_to_cucm(username=session.get('cucm_username'), password=session.get('cucm_password'), cucm_ip=session.get('cucm_ip'))
+    cucm = connect_to_cucm(username=session.get('cucm_username'),
+                           password=session.get('cucm_password'),
+                           cucm_ip=session.get('cucm_ip'))
+
     returned_data = cucm.listUserGroup(searchCriteria={'name': '%'}, returnedTags={'name': ''})
 
     user_groups = []
@@ -112,14 +127,9 @@ def list_user_groups():
 
 def is_ldap_user():
     userid = session.get('selected_user')
-    cucm = connect_to_cucm(username=session.get('cucm_username'), password=session.get('cucm_password'), cucm_ip=session.get('cucm_ip'))
+    user_data = session.get('user_data')
 
-    sql_query = f"select islocaluser from enduser where userid = '{userid}'"
-    query_results = cucm.executeSQLQuery(sql=sql_query)
-
-    for item in query_results['return']['row']:
-        # The field in the CUCM refers to the user being a local user or not
-        if item[0].text == 't':
-            return False
-        else:
-            return True
+    if user_data['ldapDirectoryName']['uuid']:
+        return True
+    else:
+        return False
