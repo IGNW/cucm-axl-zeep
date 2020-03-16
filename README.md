@@ -41,5 +41,6 @@ If you don't want to have to type your Username and IP Address every time, you c
 Nothing, the `--rm` flag will automatically delete the container when it's done running.
 
 ## Deleting the Image
-Type `docker images` will give you a list of all images
+Type `docker images` will give you a list of all images.
+
 Type `docker image rm flask-cucm-zeep` to remove the image created with the build command.
