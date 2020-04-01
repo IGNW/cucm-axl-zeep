@@ -6,4 +6,5 @@ app = Flask(__name__, instance_relative_config=True)
 app.config.from_object(Config)
 bootstrap = Bootstrap(app)
 
+# This is needed here to help prevent circular imports
 from cucm_gui import routes

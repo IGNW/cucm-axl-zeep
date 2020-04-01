@@ -107,7 +107,7 @@ def update_user():
 
         # Get all the Application User Groups out of the CUCM
         # So they can be used in the GUI
-        session['system_user_groups'] = cucm.list_user_groups() 
+        session['system_user_groups'] = cucm.list_user_groups()
 
         form.firstName.data = user_data['firstName']
         form.lastName.data = user_data['lastName']
@@ -115,7 +115,7 @@ def update_user():
 
         # Passes the choices and already selected values into the
         # Multiple Select form in the next page
-        form.userGroup.choices = session['system_user_groups'] 
+        form.userGroup.choices = session['system_user_groups']
         form.userGroup.data = user_groups
 
         return render_template('update_user.html',
