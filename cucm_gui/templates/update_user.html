@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Update User Data</h1>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        Selected User: {{ userid }}
+        <p>
+            {{ form.firstName.label }}<br>
+            {{ form.firstName(disabled=is_ldap_user) }}
+            {% if is_ldap_user %}
+            Field disabled as you can't update an LDAP User
+            {% endif %}
+            {% for error in form.firstName.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.lastName.label }}<br>
+            {{ form.lastName(disabled=is_ldap_user) }}
+            {% if is_ldap_user %}
+            Field disabled as you can't update an LDAP User
+            {% endif %}
+            {% for error in form.lastName.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.displayName.label }}<br>
+            {{ form.displayName(disabled=is_ldap_user) }}
+            {% if is_ldap_user %}
+            Field disabled as you can't update an LDAP User
+            {% endif %}
+            {% for error in form.displayName.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.userGroup.label }}<br>
+            {{ form.userGroup() }}
+            {% for error in form.userGroup.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        NOTE: You can press "Command + Click" to unselect and item in the selector.
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}
