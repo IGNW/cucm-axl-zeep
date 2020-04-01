@@ -26,6 +26,7 @@ def cucm_list_device_pools():
 @app.route('/cucm_device_pools', methods=['GET', 'POST'])
 def cucm_device_pools():
     device_pools = cucm.list_device_pools()
+    print(device_pools)
     return render_template('cucm_device_pools.html', title='CUCM Device Pools', device_pools=device_pools)
 
 

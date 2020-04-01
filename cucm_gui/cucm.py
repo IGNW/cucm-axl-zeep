@@ -5,6 +5,7 @@ from requests.auth import HTTPBasicAuth
 from zeep import Client, Settings, Plugin
 from zeep.transports import Transport
 from zeep.helpers import serialize_object
+import zeep
 
 from pathlib import Path
 
@@ -103,16 +104,46 @@ def list_device_pools():
                            password=session.get('cucm_password'),
                            cucm_ip=session.get('cucm_ip'))
 
-    returned_data = cucm.listDevicePool(searchCriteria={'name': '%'}, returnedTags={'name': ''})
-    device_pools = [x['name'] for x in returned_data['return']['devicePool']]
-    return device_pools
+    returned_tags = {
+        'name': '',
+        'dateTimeSettingName': '',
+        'callManagerGroupName': '',
+        'mediaResourceListName': '',
+        'regionName': '',
+        'networkLocale': '',
+        'srstName': '',
+        'locationName': '',
+        'mobilityCssName': '',
+        'physicalLocationName': '',
+        'deviceMobilityGroupName': ''
+    }
+
+    returned_data = cucm.listDevicePool(searchCriteria={'name': '%'}, returnedTags=returned_tags)
+    returned_dict = serialize_object(returned_data['return']['devicePool'])
+    filtered_data = []
+
+    for device_pool in returned_dict: 
+        filtered_pool = {}
+        for k,v in device_pool.items():
+            if device_pool[k] is not None:
+                from collections import OrderedDict
+                if isinstance(device_pool[k], OrderedDict):
+                    filtered_pool[k] = v['_value_1']
+                else:
+                    filtered_pool[k] = v
+
+        filtered_data.append(filtered_pool)
+
+    from pprint import pprint
+    pprint(filtered_data)
+    return filtered_data 
 
 
 def list_user_groups():
     cucm = connect_to_cucm(username=session.get('cucm_username'),
                            password=session.get('cucm_password'),
                            cucm_ip=session.get('cucm_ip'))
-
+    
     returned_data = cucm.listUserGroup(searchCriteria={'name': '%'}, returnedTags={'name': ''})
 
     user_groups = []

@@ -1,9 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <style>
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 5px;
+      text-align: left;
+    }
+    </style>
     <h1>CUCM Device Pools</h1>
-    This is a basic example of getting info from CUCM and displaying it on the page<br>
+    This is a basic example of getting info from CUCM and displaying it on the page<br><br><br>
     {% for dp in device_pools %}
-    {{ dp }}<br>
+    
+    <table style="width:100%">
+        <caption>Subset of Data for Device Pool: <b>{{ dp['name'] }}</b></caption>
+        {% for k,v in dp.items() %}
+        <tr>
+          <th>{{ k }}</th>
+          <td>{{ v }}</th>
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
     {% endfor %}
 {% endblock %}

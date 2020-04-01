@@ -2,3 +2,5 @@
 Pipfile*
 .DS_Store
 .flake8
+*.pyc
+venv
