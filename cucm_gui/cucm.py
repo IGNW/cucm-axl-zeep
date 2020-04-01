@@ -134,8 +134,6 @@ def list_device_pools():
 
         filtered_data.append(filtered_pool)
 
-    from pprint import pprint
-    pprint(filtered_data)
     return filtered_data 
 
 
