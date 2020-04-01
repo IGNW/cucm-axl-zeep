@@ -27,6 +27,7 @@ Docker (Linux) or Docker Desktop (Mac / Windows) must be installed.  The link be
 
 - Install Docker or Docker Desktop and make sure its running
 - Clone this Repo or download the file to your local computer in a directory
+- Change directory into the repo `cd cucm-axl-zeep`
 - Run the command `docker build -t flask-cucm-zeep .` to build the Docker Image
 - Run the command `docker run -it --rm --name running-flask-cucm-zeep -p 5000:5000 flask-cucm-zeep` to build and run a container based on the image you just created.
 
